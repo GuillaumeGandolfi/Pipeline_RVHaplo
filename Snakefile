@@ -6,15 +6,29 @@ BWA_INDEX = ['amb','ann','bwt','pac','sa']
 reference_file = config["FILES"]["reference_file"]
 fastq_file = config["FILES"]["fastq_file"]
 work_directory = config["DIRECTORIES"]["working_directory"]
+seq_summary = config["FILES"]["sequencing_summary"]
 
 ref_without_ext = os.path.splitext(os.path.basename(reference_file))[0]
 fastq_without_ext = os.path.splitext(os.path.basename(fastq_file))[0]
+summary_without_ext = os.path.splitext(os.path.basename(seq_summary))[0]
 
 basename_ref = os.path.basename(reference_file)
 
 rule all:
     input:
+        expand(f"{work_directory}/sequencing/{{summary}}.html",summary=summary_without_ext),
         expand(f"{work_directory}/mapped/{{fastq}}_map{{reference}}.sam", fastq=fastq_without_ext, reference=ref_without_ext)
+
+
+rule pycoQC:
+    input:
+        summary = seq_summary
+    output:
+        html = f"{work_directory}/sequencing/{{summary_without_ext}}.html"
+    conda:
+        "envs/pycoQC.yml"
+    shell:
+        "pycoQC --summary_file {input} --html_outfile {output}"
 
 
 rule convert_fasta:
