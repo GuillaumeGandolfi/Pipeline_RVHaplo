@@ -5,4 +5,5 @@ DIRECTORIES:
 FILES:
   fastq_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/reads/mix50.fastq"
   reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/BF1.fasta"
+  sequencing_summary: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/sequencing/sequencing_summary.txt"
 
