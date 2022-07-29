@@ -1,9 +1,11 @@
 
 DIRECTORIES:
   working_directory: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo"
+  rvhaplo_results: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/results_RVHaplo"
+  sequencing_summary: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/sequencing"
+  fastq_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/reads"
 
 FILES:
-  fastq_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/reads/mix50.fastq"
   reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/BF1.fasta"
-  sequencing_summary: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/sequencing/sequencing_summary.txt"
+
 
