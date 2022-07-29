@@ -11,4 +11,7 @@ FILES:
 config_seqkit:
   cut: 0
 
+summary_file:
+  presence: True
+
 
