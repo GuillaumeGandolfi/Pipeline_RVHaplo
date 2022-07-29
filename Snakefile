@@ -24,10 +24,11 @@ for file in os.listdir(path_fastq):
     if file.endswith('.fastq'):
         fastq_files.append(os.path.splitext(os.path.basename(file))[0])
 
+
 rule all:
     input:
         expand(f"{path_summary}/{{summary}}.html",summary=summary_files),
-        expand(f"{work_directory}/mapped/{{fastq}}_map{{reference}}.sam", fastq=fastq_files, reference=ref_without_ext)
+        expand(f"{res_directory}/{{fastq}}/rvhaplo_haplotypes.fasta", fastq=fastq_files)
 
 
 rule pycoQC:
@@ -72,3 +73,15 @@ rule bwa_mem:
         "bioinfo/bwa/0.7.17"
     shell:
         "bwa mem {input.reference} {input.fasta} > {output}"
+
+
+rule RVHaplo:
+    input:
+        sam = rules.bwa_mem.output.sam_file,
+        reference = reference_file
+    output:
+        haplo = expand(f"{res_directory}/{{fastq}}/rvhaplo_haplotypes.fasta", fastq=fastq_files)
+    conda:
+        "envs/rvhaplo.yml"
+    shell:
+        "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {res_directory}/{fastq_files}/ -t 32 || true"
