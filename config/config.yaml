@@ -8,4 +8,7 @@ DIRECTORIES:
 FILES:
   reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/BF1.fasta"
 
+config_seqkit:
+  cut: 0
+
 
