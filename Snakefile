@@ -2,35 +2,44 @@ configfile: "config/config.yaml"
 
 import os
 
+filter_seqkit = config["config_seqkit"]["cut"]
+summary_presence = config["summary_file"]["presence"]
+
 BWA_INDEX = ['amb','ann','bwt','pac','sa']
-reference_file = config["FILES"]["reference_file"]
-path_fastq = config["DIRECTORIES"]["fastq_file"]
+
 work_directory = config["DIRECTORIES"]["working_directory"]
-path_summary = config["DIRECTORIES"]["sequencing_summary"]
+reference_file = config["FILES"]["reference_file"]
 res_directory = config["DIRECTORIES"]["rvhaplo_results"]
 
-filter_seqkit = config["config_seqkit"]["cut"]
-
-ref_without_ext = os.path.splitext(os.path.basename(reference_file))[0]
-basename_ref = os.path.basename(reference_file)
-path_ref = os.path.dirname(reference_file)
-
-summary_files = []
-for file in os.listdir(path_summary):
-    if file.endswith('.txt'):
-        summary_files.append(os.path.splitext(os.path.basename(file))[0])
-
+path_fastq = config["DIRECTORIES"]["fastq_file"]
 fastq_files = []
 for file in os.listdir(path_fastq):
     if file.endswith('.fastq'):
         fastq_files.append(os.path.splitext(os.path.basename(file))[0])
 
+path_summary = config["DIRECTORIES"]["sequencing_summary"]
+if summary_presence == True:
+    summary_files = []
+    for file in os.listdir(path_summary):
+        if file.endswith('.txt'):
+            summary_files.append(os.path.splitext(os.path.basename(file))[0])
 
-rule all:
-    input:
-        expand(f"{path_summary}/{{summary}}.html",summary=summary_files),
-        expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/rvhaplo_haplotypes.fasta", fastq=fastq_files) if filter_seqkit !=0
-        else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/rvhaplo_haplotypes.fasta", fastq=fastq_files)
+ref_without_ext = os.path.splitext(os.path.basename(reference_file))[0]
+basename_ref = os.path.basename(reference_file)
+path_ref = os.path.dirname(reference_file)
+
+
+if summary_presence == True:
+    rule all:
+        input:
+            expand(f"{path_summary}/{{summary}}.html",summary=summary_files),
+            expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/rvhaplo_haplotypes.fasta", fastq=fastq_files) if filter_seqkit !=0
+            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/rvhaplo_haplotypes.fasta", fastq=fastq_files)
+else:
+    rule all:
+        input:
+            expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/rvhaplo_haplotypes.fasta",fastq=fastq_files) if filter_seqkit != 0
+            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/rvhaplo_haplotypes.fasta",fastq=fastq_files)
 
 
 rule pycoQC:
@@ -89,14 +98,13 @@ rule bwa_mem:
     shell:
         "bwa mem {input.reference} {input.fasta} > {output}"
 
-
 rule RVHaplo:
     input:
         sam = rules.bwa_mem.output.sam_file,
         reference = reference_file
     output:
         haplo = expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/rvhaplo_haplotypes.fasta", fastq=fastq_files) if filter_seqkit != 0
-        else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/rvhaplo_haplotypes.fasta")
+        else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/rvhaplo_haplotypes.fasta", fastq=fastq_files)
     conda:
         "envs/rvhaplo.yml"
     shell:
