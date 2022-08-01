@@ -8,8 +8,9 @@ summary_presence = config["summary_file"]["presence"]
 BWA_INDEX = ['amb','ann','bwt','pac','sa']
 
 work_directory = config["DIRECTORIES"]["working_directory"]
-reference_file = config["FILES"]["reference_file"]
 res_directory = config["DIRECTORIES"]["rvhaplo_results"]
+reference_file = config["FILES"]["reference_file"]
+all_refs = config["FILES"]["all_refs_file"]
 
 path_fastq = config["DIRECTORIES"]["fastq_file"]
 fastq_files = []
@@ -33,13 +34,13 @@ if summary_presence == True:
     rule all:
         input:
             expand(f"{path_summary}/{{summary}}.html",summary=summary_files),
-            expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/rvhaplo_haplotypes.fasta", fastq=fastq_files) if filter_seqkit !=0
-            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/rvhaplo_haplotypes.fasta", fastq=fastq_files)
+            haplo_refs=expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/haplo_refs.fasta",fastq=fastq_files) if filter_seqkit != 0
+            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/haplo_refs.fasta",fastq=fastq_files)
 else:
     rule all:
         input:
-            expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/rvhaplo_haplotypes.fasta",fastq=fastq_files) if filter_seqkit != 0
-            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/rvhaplo_haplotypes.fasta",fastq=fastq_files)
+            haplo_refs=expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/haplo_refs.fasta",fastq=fastq_files) if filter_seqkit != 0
+            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/haplo_refs.fasta",fastq=fastq_files)
 
 
 rule pycoQC:
@@ -110,3 +111,22 @@ rule RVHaplo:
     shell:
         "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {res_directory}/{fastq_files}/{fastq_files}_sup{filter_seqkit} -t 32 || true" if filter_seqkit != 0
         else "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {res_directory}/{fastq_files}/{fastq_files}_allreads -t 32 || true"
+
+
+rule merge:
+    input:
+        haplotypes = rules.RVHaplo.output.haplo,
+        all_refs_file = all_refs
+    output:
+        haplo_refs = expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/haplo_refs.fasta", fastq=fastq_files) if filter_seqkit != 0
+        else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/haplo_refs.fasta", fastq=fastq_files)
+    run:
+        with open(input.all_refs_file) as file:
+            data = file.read()
+        for haplo_file in input.haplotypes:
+            with open(haplo_file) as file:
+                data2 = file.read()
+        data2 += data
+        for merge_file in output.haplo_refs:
+            with open(merge_file, "w") as file:
+                file.write(data2)
