@@ -31,6 +31,9 @@ ref_without_ext = os.path.splitext(os.path.basename(reference_file))[0]
 basename_ref = os.path.basename(reference_file)
 path_ref = os.path.dirname(reference_file)
 
+threads_RVHaplo = config["PARAMS"]["RVHaplo"]["threads"]
+threads_bwamem = config["PARAMS"]["bwa_mem"]["threads"]
+
 
 if summary_presence == True:
     rule all:
@@ -97,6 +100,7 @@ rule bwa_index:
         "bwa index {input}"
 
 rule bwa_mem:
+    threads: threads_bwamem
     input:
         reference = reference_file,
         index_file = rules.bwa_index.output.index_file,
@@ -107,9 +111,10 @@ rule bwa_mem:
     envmodules:
         "bioinfo/bwa/0.7.17"
     shell:
-        "bwa mem {input.reference} {input.fasta} > {output}"
+        "bwa mem -t {threads} {input.reference} {input.fasta} > {output}"
 
 rule RVHaplo:
+    threads: threads_RVHaplo
     input:
         sam = rules.bwa_mem.output.sam_file,
         reference = reference_file
@@ -119,8 +124,8 @@ rule RVHaplo:
     conda:
         "envs/rvhaplo.yml"
     shell:
-        "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {res_directory}/{fastq_files}/{fastq_files}_sup{filter_seqkit} -t 32 || true" if filter_seqkit != 0
-        else "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {res_directory}/{fastq_files}/{fastq_files}_allreads -t 32 || true"
+        "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {res_directory}/{fastq_files}/{fastq_files}_sup{filter_seqkit} -t {threads} || true" if filter_seqkit != 0
+        else "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {res_directory}/{fastq_files}/{fastq_files}_allreads -t {threads} || true"
 
 
 rule merge:
