@@ -11,6 +11,13 @@ FILES:
   all_refs_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/refs.fasta"
   all_refs_CP: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/seq_CP.fasta"
 
+
+PARAMS:
+  RVHaplo:
+    threads: 32
+  bwa_mem:
+    threads: 16
+
 config_seqkit:
   cut: 0
 
