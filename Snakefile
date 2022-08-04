@@ -9,10 +9,12 @@ BWA_INDEX = ['amb','ann','bwt','pac','sa']
 
 work_directory = config["DIRECTORIES"]["working_directory"]
 res_directory = config["DIRECTORIES"]["rvhaplo_results"]
+fast5_directory = config["DIRECTORIES"]["fast5_files"]
 reference_file = config["FILES"]["reference_file"]
 all_refs = config["FILES"]["all_refs_file"]
+CP_refs = config["FILES"]["all_refs_CP"]
 
-path_fastq = config["DIRECTORIES"]["fastq_file"]
+path_fastq = config["DIRECTORIES"]["fastq_files"]
 fastq_files = []
 for file in os.listdir(path_fastq):
     if file.endswith('.fastq'):
@@ -34,13 +36,21 @@ if summary_presence == True:
     rule all:
         input:
             expand(f"{path_summary}/{{summary}}.html",summary=summary_files),
-            aln=expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/haplo_refs.aln",sample=fastq_files) if filter_seqkit != 0
-            else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/haplo_refs.aln",sample=fastq_files)
+            aln=expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/alignment.fasta",sample=fastq_files) if filter_seqkit != 0
+            else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/alignment.fasta",sample=fastq_files),
+            aln_CP= expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/alignment_CP.fasta",sample=fastq_files) if filter_seqkit != 0
+            else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/alignment_CP.fasta", sample=fastq_files)
 else:
     rule all:
         input:
-            aln=expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/haplo_refs.aln",sample=fastq_files) if filter_seqkit != 0
-            else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/haplo_refs.aln",sample=fastq_files)
+            aln=expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/alignment.fasta",sample=fastq_files) if filter_seqkit != 0
+            else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/alignment.fasta",sample=fastq_files),
+            aln_CP= expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/alignment_CP.fasta",sample=fastq_files) if filter_seqkit != 0
+            else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/alignment_CP.fasta", sample=fastq_files)
+
+rule Guppy:
+    input:
+        fast5 = fast5_directory
 
 
 rule pycoQC:
@@ -116,28 +126,46 @@ rule RVHaplo:
 rule merge:
     input:
         haplotypes = rules.RVHaplo.output.haplo,
-        all_refs_file = all_refs
+        all_refs_file = all_refs,
+        all_CP_refs = CP_refs
     output:
         haplo_refs = expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/haplo_refs.fasta", fastq=fastq_files) if filter_seqkit != 0
-        else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/haplo_refs.fasta", fastq=fastq_files)
+        else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/haplo_refs.fasta", fastq=fastq_files),
+        haplo_refs_CP = expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_seqkit}/haplo_refs_CP.fasta", fastq=fastq_files) if filter_seqkit != 0
+        else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/haplo_refs_CP.fasta", fastq=fastq_files)
     run:
         with open(input.all_refs_file) as file:
-            data = file.read()
+            refs = file.read()
+        with open(input.all_CP_refs) as file:
+            refs_CP = file.read()
         for haplo_file in input.haplotypes:
             with open(haplo_file) as file:
-                data2 = file.read()
-        data2 += data
+                haplo1 = file.read()
+        haplo1 += refs
         for merge_file in output.haplo_refs:
             with open(merge_file, "w") as file:
-                file.write(data2)
+                file.write(haplo1)
+        for haplo_file in input.haplotypes:
+            with open(haplo_file) as file:
+                haplo2 = file.read()
+        haplo2 += refs_CP
+        for merge_file2 in output.haplo_refs_CP:
+            with open(merge_file2, "w") as file:
+                file.write(haplo2)
 
-rule alignment:
+rule alignment_ref:
     input:
-        haplo_refs = rules.merge.output.haplo_refs
+        haplo_refs = rules.merge.output.haplo_refs,
+        haplo_refs_CP = rules.merge.output.haplo_refs_CP
     output:
-        aln = expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/haplo_refs.aln", sample=fastq_files) if filter_seqkit != 0
-        else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/haplo_refs.aln", sample=fastq_files)
+        aln = expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/alignment.fasta", sample=fastq_files) if filter_seqkit != 0
+        else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/alignment.fasta", sample=fastq_files),
+        aln_CP = expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/alignment_CP.fasta", sample=fastq_files) if filter_seqkit != 0
+        else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/alignment_CP.fasta", sample=fastq_files)
     envmodules:
         "bioinfo/muscle/3.8.31"
     shell:
-        "muscle3.8.31_i86linux64 -in {input.haplo_refs} -out {output.aln}"
+        """
+        muscle3.8.31_i86linux64 -in {input.haplo_refs} -out {output.aln}
+        muscle3.8.31_i86linux64 -in {input.haplo_refs_CP} -out {output.aln_CP}
+        """
