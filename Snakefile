@@ -51,10 +51,6 @@ else:
             aln_CP= expand(f"{res_directory}/{{sample}}/{{sample}}_sup{filter_seqkit}/alignment_CP.fasta",sample=fastq_files) if filter_seqkit != 0
             else expand(f"{res_directory}/{{sample}}/{{sample}}_allreads/alignment_CP.fasta", sample=fastq_files)
 
-rule Guppy:
-    input:
-        fast5 = fast5_directory
-
 
 rule pycoQC:
     input:
