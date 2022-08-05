@@ -1,10 +1,8 @@
-
 DIRECTORIES:
   working_directory: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo"
   rvhaplo_results: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/results_RVHaplo"
   sequencing_summary: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/sequencing"
   fastq_files: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/reads"
-  fast5_files: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/fast5"
 
 FILES:
   reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/BF1.fasta"
@@ -18,10 +16,10 @@ PARAMS:
   bwa_mem:
     threads: 16
 
-config_seqkit:
-  cut: 0
+FILTER_READS:
+  minimum_length: 0
 
-summary_file:
+SEQUENCING_SUMMARY:
   presence: True
 
 
