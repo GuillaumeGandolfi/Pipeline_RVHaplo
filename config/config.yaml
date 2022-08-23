@@ -5,9 +5,9 @@ DIRECTORIES:
   fastq_files: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/reads"
 
 FILES:
-  reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/BF1.fasta"
-  all_refs_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/refs.fasta"
-  all_refs_CP: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/ref/seq_CP.fasta"
+  reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/BF1.fasta"
+  all_refs_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/refs.fasta"
+  all_refs_CP: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/seq_CP.fasta"
 
 
 PARAMS:
