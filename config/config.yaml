@@ -1,25 +1,52 @@
+##### Fichier de configuration #####
+
+# Indiquez les chemins des différents dossiers nécessaires au pipeline
 DIRECTORIES:
+
+  # Chemin de dossier courant
   working_directory: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo"
+
+  # Chemin du dossier dans lequel les résultats RVHaplo seront placés
   rvhaplo_results: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/results_RVHaplo"
+
+  # Chemin du dossier contenant le(s) fichiers "sequencing_summary.txt"
+  # (facultatif) si la présence de ces fichiers est réglé sur "false"
   sequencing_summary: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/sequencing"
+
+  # Chemin du dossier contenant le(s) fichiers .fastq
   fastq_files: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/reads"
 
+# Indiquez le chemin des différents fichiers contenant les séquences de référence
 FILES:
+
+  # Fichier contenant la séquence de référence utilisée (ici BF1.fasta)
   reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/BF1.fasta"
+
+  # Fichier contenant les séquences des souches / isolats dont on possède les séquences complètes
   all_refs_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/refs.fasta"
+
+  # Fichier des tous les isolats séquencés (au niveau de la CP)
   all_refs_CP: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/seq_CP.fasta"
 
-
+# Paramètres des outils utilisés dans le pipeline
 PARAMS:
   RVHaplo:
-    threads: 32
+    # Nombre de coeurs (1-32)
+    threads: 16
+    # Nombre de coeurs (1-32)
   bwa_mem:
     threads: 16
 
+# Filtre de longueur sur les reads
 FILTER_READS:
+  # Indiquez un nombre entier pour appliquer un filtre de taille minimum
+  # Exemple => 0 pour n'appliquer aucun filtre, 200 si l'on veut que les reads possèdent au moins 200 bases, etc...
   minimum_length: 0
 
+# Régler le paramètre sur "False" our "True"
+# "True" pour obtenir un fichier HTML résumant graphiquement le séquençage, à partir du fichier "sequencing_summary.txt"
+# "False" si l'on ne souhaite pas utiliser le fichier sequencing_summary ou s'il est absent
 SEQUENCING_SUMMARY:
-  presence: True
+  presence: False
 
 
