@@ -22,7 +22,7 @@ CP_refs = config["FILES"]["all_refs_CP"]
 path_fastq = config["DIRECTORIES"]["fastq_files"]
 fastq_files = []
 for file in os.listdir(path_fastq):
-    if file.endswith('.fastq'):
+    if (file.endswith('.fastq')) or (file.endswith('.fasta')):
         fastq_files.append(os.path.splitext(os.path.basename(file))[0])
 
 ## Path of sequencing_summary files
@@ -51,19 +51,20 @@ if sequencing_summary == True:
     rule all:
         input:
             expand(f"{path_summary}/{{summary}}.html",summary=summary_files),
-            aln=expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment.fasta",fastq=fastq_files) if filter_reads != 0
-            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment.fasta",fastq=fastq_files),
+            tree=expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/NJ_tree.nwk", fastq=fastq_files) if filter_reads != 0
+            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/NJ_tree.nwk", fastq=fastq_files),
             aln_CP= expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment_CP.fasta",fastq=fastq_files) if filter_reads != 0
             else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment_CP.fasta", fastq=fastq_files)
 else:
     rule all:
         input:
-            aln=expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment.fasta",fastq=fastq_files) if filter_reads != 0
-            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment.fasta",fastq=fastq_files),
+            tree=expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/NJ_tree.nwk",fastq=fastq_files) if filter_reads != 0
+            else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/NJ_tree.nwk",fastq=fastq_files),
             aln_CP= expand(f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment_CP.fasta",fastq=fastq_files) if filter_reads != 0
             else expand(f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment_CP.fasta", fastq=fastq_files)
 
 
+## PycoQC rule (generate interactive plots for ONT sequencing data)
 rule pycoQC:
     input:
         summary = f"{path_summary}/{{summary}}.txt"
@@ -74,7 +75,7 @@ rule pycoQC:
     shell:
         "pycoQC --summary_file {input} --html_outfile {output}"
 
-
+## Convert '.fastq' files to 'fasta' files
 rule convert_fasta:
     input:
         fastq = f"{path_fastq}/{{fastq}}.fastq"
@@ -85,9 +86,10 @@ rule convert_fasta:
     shell:
         "seqtk seq -a {input.fastq} > {output.conv_fasta}"
 
+## Apply a length filter on the reads
 rule cut_fasta:
     input:
-        fasta = rules.convert_fasta.output.conv_fasta
+        fasta = rules.convert_fasta.output.conv_fasta or f"{path_fastq}/{{fastq}}.fasta"
     output:
         fasta_cut = expand(f"{path_fastq}/{{fastq}}_sup{filter_reads}.fasta", fastq=fastq_files)
     envmodules:
@@ -97,6 +99,7 @@ rule cut_fasta:
     shell:
         "seqkit seq -g -m {params.filter} {input} > {output}"
 
+## Index the reference sequence
 rule bwa_index:
     input:
         reference = reference_file
@@ -107,12 +110,13 @@ rule bwa_index:
     shell:
         "bwa index {input}"
 
+## Mapping of the reads on the reference
 rule bwa_mem:
     threads: threads_bwamem
     input:
         reference = reference_file,
         index_file = rules.bwa_index.output.index_file,
-        fasta = rules.cut_fasta.output.fasta_cut if filter_reads != 0 else rules.convert_fasta.output.conv_fasta
+        fasta = rules.cut_fasta.output.fasta_cut if filter_reads != 0 else f"{path_fastq}/{{fastq}}.fasta"
     output:
         sam_file = f"{work_directory}/mapped/{{fastq}}_sup{filter_reads}_map{ref_without_ext}.sam"
         if filter_reads != 0 else f"{work_directory}/mapped/{{fastq}}_map{ref_without_ext}.sam"
@@ -121,6 +125,7 @@ rule bwa_mem:
     shell:
         "bwa mem -t {threads} {input.reference} {input.fasta} > {output}"
 
+## RVHaplo tool (reconstruction of viral haplotypes)
 rule RVHaplo:
     threads: threads_RVHaplo
     params:
@@ -137,6 +142,7 @@ rule RVHaplo:
         "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {params.outdir}_sup{filter_reads} -t {threads} || true" if filter_reads != 0
         else "./rvhaplo.sh -i {input.sam} -r {input.reference} -o {params.outdir}_allreads -t {threads} || true"
 
+## Merge haplotype files with the refs files
 rule merge:
     input:
         haplotypes = rules.RVHaplo.output.haplo,
@@ -168,12 +174,13 @@ rule merge:
         with open(merge_file_2, "w") as file:
             file.write(haplo2)
 
+## Multiple alignment (muscle) of haplotypes with sequences of RYMV isolates + reference sequences
 rule alignment_ref:
     input:
         haplo_refs = rules.merge.output.haplo_refs,
         haplo_refs_CP = rules.merge.output.haplo_refs_CP
     output:
-        aln = f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment.fasta" if filter_reads != 0
+        aln=f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment.fasta" if filter_reads != 0
         else f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment.fasta",
         aln_CP = f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment_CP.fasta" if filter_reads != 0
         else f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment_CP.fasta"
@@ -184,3 +191,13 @@ rule alignment_ref:
         muscle3.8.31_i86linux64 -in {input.haplo_refs} -out {output.aln}
         muscle3.8.31_i86linux64 -in {input.haplo_refs_CP} -out {output.aln_CP}
         """
+
+
+rule phylogenetic_tree:
+    input:
+        alignment = rules.alignment_ref.output.aln
+    output:
+        tree = f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/NJ_tree.nwk" if filter_reads != 0
+        else f"{res_directory}/{{fastq}}/{{fastq}}_allreads/NJ_tree.nwk"
+    script:
+        "python_script/tree.py"
