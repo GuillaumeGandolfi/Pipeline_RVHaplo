@@ -29,6 +29,7 @@ Pour faire fonctionner le pipeline, il est nécessaire de charger 2 modules sur 
 
 ```
 module load system/Miniconda3/1.0
+
 module load system/python/3.8.12
 ```
 
@@ -38,7 +39,9 @@ Exemple :
 
 ```
 mkdir reads_files
+
 mkdir results
+
 (facultatif) mkdir sequencing_summary
 ```
 
@@ -57,11 +60,17 @@ La ligne de commande pour lancer le pipeline va nécessiter différents argument
 
 ```
 --cores [N] | nombre maximum de coeurs utilisables en parallèles pour les différents outils du pipeline
+
 --snakefile [FILE] | fichier snakemake (si le fichier se nomme Snakemake ou snakemake, argument facultatif)
+
 --configfile [FILE] | fichier de configuration
+
 --use-envmodules | pour que le pipeline charge les modules nécessaires à l'utilisation des différents outils
+
 --use-conda | pour que le pipeline installe les différents environnements conda
+
 --conda-frontend conda | pour spécifier que l'on utilise conda et non mamba pour activer les environnements
+
 (Facultatif) -np | lance en mode "dry-run", le pipeline va juste indiquer toutes les tâches qu'il va faire
 ```
 
