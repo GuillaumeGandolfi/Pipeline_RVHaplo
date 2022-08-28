@@ -46,6 +46,12 @@ path_ref = os.path.dirname(reference_file)
 threads_RVHaplo = config["PARAMS"]["RVHaplo"]["threads"]
 threads_bwamem = config["PARAMS"]["bwa_mem"]["threads"]
 
+## Import modules
+seqkt = config["MODULES"]["seqtk"]
+seqkit = config["MODULES"]["seqkit"]
+bwa = config["MODULES"]["bwa"]
+muscle = config["MODULES"]["alignment_muscle"]
+
 
 if sequencing_summary == True:
     rule all:
@@ -81,8 +87,7 @@ rule convert_fasta:
         fastq = f"{path_fastq}/{{fastq}}.fastq"
     output:
         conv_fasta = f"{path_fastq}/{{fastq}}.fasta"
-    envmodules:
-        "bioinfo/seqtk/1.3-r106"
+    envmodules: seqkt
     shell:
         "seqtk seq -a {input.fastq} > {output.conv_fasta}"
 
@@ -92,8 +97,7 @@ rule cut_fasta:
         fasta = rules.convert_fasta.output.conv_fasta or f"{path_fastq}/{{fastq}}.fasta"
     output:
         fasta_cut = expand(f"{path_fastq}/{{fastq}}_sup{filter_reads}.fasta", fastq=fastq_files)
-    envmodules:
-        "bioinfo/seqkit/2.1.0"
+    envmodules: seqkit
     params:
         filter = filter_reads
     shell:
@@ -105,8 +109,7 @@ rule bwa_index:
         reference = reference_file
     output:
         index_file = expand(f"{path_ref}/{basename_ref}.{{suffix}}", suffix=BWA_INDEX)
-    envmodules:
-        "bioinfo/bwa/0.7.17"
+    envmodules: bwa
     shell:
         "bwa index {input}"
 
@@ -120,8 +123,7 @@ rule bwa_mem:
     output:
         sam_file = f"{work_directory}/mapped/{{fastq}}_sup{filter_reads}_map{ref_without_ext}.sam"
         if filter_reads != 0 else f"{work_directory}/mapped/{{fastq}}_map{ref_without_ext}.sam"
-    envmodules:
-        "bioinfo/bwa/0.7.17"
+    envmodules: bwa
     shell:
         "bwa mem -t {threads} {input.reference} {input.fasta} > {output}"
 
@@ -184,8 +186,7 @@ rule alignment_ref:
         else f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment.fasta",
         aln_CP = f"{res_directory}/{{fastq}}/{{fastq}}_sup{filter_reads}/alignment_CP.fasta" if filter_reads != 0
         else f"{res_directory}/{{fastq}}/{{fastq}}_allreads/alignment_CP.fasta"
-    envmodules:
-        "bioinfo/muscle/3.8.31"
+    envmodules: muscle
     shell:
         """
         muscle3.8.31_i86linux64 -in {input.haplo_refs} -out {output.aln}
