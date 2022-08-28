@@ -14,7 +14,7 @@ Première étape : cloner le répertoire Git sur votre machine
 git clone https://github.com/RainbowBishop/Pipeline_RVHaplo.git
 ```
 
-Une fois le répertoire cloné, modifié les droits d'exécution du fichier rvhaplo.sh
+Une fois le répertoire cloné, modifier les droits d'exécution du fichier rvhaplo.sh
 
 ```
 chmod +x rvhaplo.sh
