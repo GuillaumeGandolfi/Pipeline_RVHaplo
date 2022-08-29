@@ -6,6 +6,12 @@ Ce pipeline réalisé en Snakemake permet d'automatiser l'utilisation de l'outil
 
 Le but de cet outil est de reconstruire les haplotypes viraux à partir de données de séquençage 'long reads'
 
+Il va à partir des fichiers '.fastq' ou '.fasta' issus d'un basecalling à la suite d'un séquençage, réaliser un alignement des reads sur la séquence de référence fournie (mapping). Il va ensuite utiliser le fichier créer au format '.sam' dans l'outil RVHaplo afin d'identifier différents haplotypes viraux présents. A la suite de cela, les haplotypes identifiés seront utilisés dans un alignement multiple avec des séquences de référence d'autres isolats / souches puis un arbre phylogénétique sera construit à partir de cet alignement multiple. 
+
+Il est également possible d'appliquer un filtre de longueur minimum pour les reads (par défaut, pas de filtre)
+
+
+
 ## Pour commencer
 
 Première étape : cloner le répertoire Git sur votre machine
