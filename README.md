@@ -22,7 +22,7 @@ git clone https://github.com/RainbowBishop/Pipeline_RVHaplo.git
 cd Pipeline_RVHaplo
 ```
 
-Une fois le répertoire cloné, modifier les droits d'exécution du fichier rvhaplo.sh
+Une fois situé dans le répertoire cloné, modifier les droits d'exécution du fichier rvhaplo.sh
 
 ```
 chmod +x rvhaplo.sh
