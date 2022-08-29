@@ -14,10 +14,12 @@ Il est également possible d'appliquer un filtre de longueur minimum pour les re
 
 ## Pour commencer
 
-Première étape : cloner le répertoire Git sur votre machine
+Première étape : cloner le répertoire Git localement et s'y déplacer
 
 ```
 git clone https://github.com/RainbowBishop/Pipeline_RVHaplo.git
+
+cd Pipeline_RVHaplo
 ```
 
 Une fois le répertoire cloné, modifier les droits d'exécution du fichier rvhaplo.sh
