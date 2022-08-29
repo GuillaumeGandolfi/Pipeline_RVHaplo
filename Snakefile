@@ -11,22 +11,22 @@ BWA_INDEX = ['amb','ann','bwt','pac','sa']
 
 ## Path of folders (config file)
 work_directory = config["DIRECTORIES"]["working_directory"]
-res_directory = config["DIRECTORIES"]["rvhaplo_results"]
+res_directory = work_directory + config["DIRECTORIES"]["rvhaplo_results"]
 
 ## Path of files (config file)
-reference_file = config["FILES"]["reference_file"]
-all_refs = config["FILES"]["all_refs_file"]
-CP_refs = config["FILES"]["all_refs_CP"]
+reference_file = work_directory + config["FILES"]["reference_file"]
+all_refs = work_directory + config["FILES"]["all_refs_file"]
+CP_refs = work_directory + config["FILES"]["all_refs_CP"]
 
 ## Path of fastq files
-path_fastq = config["DIRECTORIES"]["fastq_files"]
+path_fastq = work_directory + config["DIRECTORIES"]["fastq_files"]
 fastq_files = []
 for file in os.listdir(path_fastq):
     if (file.endswith('.fastq')) or (file.endswith('.fasta')):
         fastq_files.append(os.path.splitext(os.path.basename(file))[0])
 
 ## Path of sequencing_summary files
-path_summary = config["DIRECTORIES"]["sequencing_summary"]
+path_summary = work_directory + config["DIRECTORIES"]["sequencing_summary"]
 if sequencing_summary == True:
     summary_files = []
     for file in os.listdir(path_summary):
@@ -121,8 +121,8 @@ rule bwa_mem:
         index_file = rules.bwa_index.output.index_file,
         fasta = rules.cut_fasta.output.fasta_cut if filter_reads != 0 else f"{path_fastq}/{{fastq}}.fasta"
     output:
-        sam_file = f"{work_directory}/mapped/{{fastq}}_sup{filter_reads}_map{ref_without_ext}.sam"
-        if filter_reads != 0 else f"{work_directory}/mapped/{{fastq}}_map{ref_without_ext}.sam"
+        sam_file = f"{work_directory}mapped/{{fastq}}_sup{filter_reads}_map{ref_without_ext}.sam"
+        if filter_reads != 0 else f"{work_directory}mapped/{{fastq}}_map{ref_without_ext}.sam"
     envmodules: bwa
     shell:
         "bwa mem -t {threads} {input.reference} {input.fasta} > {output}"
