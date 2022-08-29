@@ -3,30 +3,30 @@
 # Indiquez les chemins des différents dossiers nécessaires au pipeline
 DIRECTORIES:
 
-  # Chemin de dossier courant
-  working_directory: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo"
+  # Chemin du dossier courant
+  working_directory: "/scratch/rymv_test/Pipeline_RVHaplo/"
 
   # Chemin du dossier dans lequel les résultats RVHaplo seront placés
-  rvhaplo_results: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/results_RVHaplo"
+  rvhaplo_results: "results_RVHaplo"
 
   # Chemin du dossier contenant le(s) fichiers "sequencing_summary.txt"
   # (facultatif) si la présence de ces fichiers est réglé sur "false"
-  sequencing_summary: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/sequencing"
+  sequencing_summary: "sequencing_summary"
 
   # Chemin du dossier contenant le(s) fichiers .fastq
-  fastq_files: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/reads"
+  fastq_files: "reads_files"
 
 # Indiquez le chemin des différents fichiers contenant les séquences de référence
 FILES:
 
   # Fichier contenant la séquence de référence utilisée (ici BF1.fasta)
-  reference_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/BF1.fasta"
+  reference_file: "refs/BF1.fasta"
 
   # Fichier contenant les séquences des souches / isolats dont on possède les séquences complètes
-  all_refs_file: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/refs.fasta"
+  all_refs_file: "refs/refs.fasta"
 
   # Fichier des tous les isolats séquencés (au niveau de la CP)
-  all_refs_CP: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/seq_cp.fasta"
+  all_refs_CP: "refs/seq_cp.fasta"
 
 # Liste des différents modules utilisés dans le pipeline
 MODULES:
