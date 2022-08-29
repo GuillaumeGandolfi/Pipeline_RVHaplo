@@ -41,14 +41,12 @@ module load system/Miniconda3/1.0
 module load system/python/3.8.12
 ```
 
-Enfin, il faut créer un dossier et y placer le ou les fichiers '.fastq' ou '.fasta' des échantillons séquencés et un dossier qui va contenir les résultats de RVHaplo et du pipeline en général. (Facultatif) : Créer un dossier contenant les fichiers 'sequencing_summary.txt' issus du basecalling
+Enfin, il faut créer un dossier et y placer le ou les fichiers '.fastq' ou '.fasta' des échantillons séquencés. (Facultatif) : Créer un dossier contenant les fichiers 'sequencing_summary.txt' issus du basecalling
 
 Exemple :
 
 ```
 mkdir reads_files
-
-mkdir results
 
 (facultatif) mkdir sequencing_summary
 ```
