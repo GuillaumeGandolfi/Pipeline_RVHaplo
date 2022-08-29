@@ -125,10 +125,9 @@ snakemake --cores 16 --configfile config/config.yaml --use-envmodules --use-cond
 Dans le dossier créer pour contenir les résultats, on trouvera un dossier par échantillon inséré dans le pipeline
 
 A l'intérieur on retrouvera :
-  - le fichier contenant les haplotypes reconstruits par RVHaplo avec leur abondance (rvhaplo_haplotypes.fasta)
-  - les fichiers contenant ces haplotypes avec les séquences des souches / isolats (haplo_refs.fasta & haplo_refs_CP.fasta)
-  - les fichiers d'alignement (alignment.fasta & alignment_CP.fasta) 
-  - l'arbre phylogénétique construit (NJ_tree.nwk)
+  - le fichier contenant les haplotypes reconstruits par RVHaplo avec leur abondance ("rvhaplo_haplotypes.fasta")
+  - les fichiers d'alignement multiple ("alignment.fasta" pour les isolats ou souches dont les séquences sont complètes & "alignment_CP.fasta" pour les séquences des isolats au niveau de la CP) 
+  - l'arbre phylogénétique construit ("NJ_tree.nwk")
 
 ## Citations
 
