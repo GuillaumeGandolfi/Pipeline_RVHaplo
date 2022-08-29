@@ -28,10 +28,15 @@ FILES:
   # Fichier des tous les isolats séquencés (au niveau de la CP)
   all_refs_CP: "/scratch/test_RYMV/snakemake/snakemake_rvhaplo/refs/seq_cp.fasta"
 
+# Liste des différents modules utilisés dans le pipeline
 MODULES:
+  # seqtk pour convertir les fichiers '.fastq' en '.fasta'
   seqtk: "bioinfo/seqtk/1.3-r106"
+  # seqkit pour appliquer si besoin un filtre de longueur sur les reads
   seqkit: "bioinfo/seqkit/2.1.0"
+  # bwa pour faire la mapping (alignement des reads sur la référence)
   bwa: "bioinfo/bwa/0.7.17"
+  # muscle pour réaliser l'alignement multiple
   alignment_muscle: "bioinfo/muscle/3.8.31"
 
 # Paramètres des outils utilisés dans le pipeline
