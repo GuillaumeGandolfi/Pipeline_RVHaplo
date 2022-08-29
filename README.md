@@ -79,7 +79,7 @@ se nomme Pipeline_RVHaplo (pour connaitre le chemin du dossier dans lequel vous 
 
 ![screen_git](https://user-images.githubusercontent.com/107557836/187189293-c02761c8-e2e1-405b-b515-2aae8e9d0e7a.png)
 
-Si par exemple vous travaillez dans le dossier "/scratch/{nom_dossier_perso}/Pipeline_RVHaplo/", vous devrez remplacer la ligne définit par défaut par celle-ci, ainsi le pipeline saura où aller les fichiers nécessaires à son éxecution. Ne pas oublier le dernier "/".
+Si par exemple vous travaillez dans le dossier "/scratch/{nom_dossier_perso}/Pipeline_RVHaplo/", vous devrez remplacer la ligne définit par défaut par celle-ci, ainsi le pipeline saura où aller chercher les fichiers nécessaires à son éxecution. Ne pas oublier le dernier "/".
 
 Ensuite, vérifier si les noms de vos dossiers correspondent au nom de dossier dans le fichier config.yaml.
 
