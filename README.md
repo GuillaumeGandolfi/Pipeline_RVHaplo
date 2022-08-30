@@ -85,6 +85,11 @@ Ensuite, vérifier si les noms de vos dossiers correspondent au nom de dossier d
 
 Enfin, il est possible de modifier d'autres paramètres dans ce fichier comme le nombre de coeurs utilisé par l'outil RVHaplo (entre 1 et 32, plus le nombre est élevé plus l'outil sera rapide) ou le filtre de longueur minimum à appliquer sur les reads (par défaut, le filtre est de 0 donc l'outil conserve tous les reads, si par exemple vous indiquez 200, les reads possédant moins de 200 bases ne seront pas conservés pour l'analyse)
 
+Conseils : 
+
+  - Regarder la longueur moyenne des reads, peut aider sur le choix du filtre (par exemple on ne va pas appliquer un filtre de longueur minimum de 1000 bases si les reads font en moyenne 200 bases, on risquerait de perdre trop de reads et donc de l'information).
+  - Si le jeu de données est consitué de 100.000 - 150.000 reads ou moins, ne pas appliquer de filtre (ou alors mettre un seuil faible).
+
 ## Démarrage
 
 La ligne de commande pour lancer le pipeline va nécessiter différents arguments
