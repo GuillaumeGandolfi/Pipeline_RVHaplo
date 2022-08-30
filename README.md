@@ -124,6 +124,15 @@ Et pour un "vrai" lancement :
 snakemake --cores 16 --configfile config/config.yaml --use-envmodules --use-conda --conda-frontend conda
 ```
 
+Il est également possible de lancer le pipeline en arrière-plan, c'est à dire qu'il travaillera tout seul même si vous n'êtes plus connecté sur le cluster, ou que l'ordinateur est éteint. Pour cela c'est le fichier "pipeline_rvhaplo.sh" qui va nous intéresser. Pour cela, le script va avoir besoin de 2 arguments, c'est à dire 2 paramètres que nous allons lui fournir. Le premier est le chemin du répertoire de travail (celui que vous avez indiqué dans le fichier de configuration), le second est le nombre de coeur maximum qui sera disponible pour le pipeline (par exemple, si le nombre de coeur est de 16 dans le fichier de configuration, indiquez 16)
+
+Exemple :
+
+``` 
+sbatch pipeline_rvhaplo.sh {argument1} {argument2}
+
+sbatch pipeline_rvhaplo.sh /scratch/rymv_test/Pipeline_RVHaplo/ 16
+```
 
 ## Résultats
 
