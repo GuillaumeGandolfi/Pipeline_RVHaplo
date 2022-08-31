@@ -79,6 +79,8 @@ Soit l'ouvrir directement sur le cluster avec un éditeur (vim, nano, ...) soit 
 scp config/config.yaml nas:/home/{nom_utilisateur}
 ```
 
+#### Importer le fichier config sur son pc localement avec FILEZILLA
+
 Une fois ce fichier ouvert, la ligne "working_directory" est la plus importante, il est nécessaire d'y indiquer le chemin pour
 accéder au répertoire de travail (le répertoire contenant les fichiers pour exécuter le pipeline) et qui, s'il n'a pas été changé,
 se nomme Pipeline_RVHaplo (pour connaitre le chemin du dossier dans lequel vous êtes situé, utilisez la commande "pwd" directement dans le terminal).
@@ -97,7 +99,7 @@ Conseils :
   - Si le jeu de données est consitué de 100.000 - 150.000 reads ou moins, ne pas appliquer de filtre (ou alors mettre un seuil faible).
 
 
-#### Pour renvoyer le fichier config dans le pipeline 
+#### Remettre le fichier config sur son HOME avec FILEZILLA puis renvoyer le fichier config dans le pipeline 
 ```
 scp nas:/home/{nom_utilisateur} config/config.yaml
 ```
