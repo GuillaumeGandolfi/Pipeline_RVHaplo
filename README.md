@@ -73,6 +73,12 @@ Avant de lancer le pipeline, il est nécessaire de le configurer. Direction le f
 
 Soit l'ouvrir directement sur le cluster avec un éditeur (vim, nano, ...) soit le transférer localement pour le modifier
 
+#### Pour transférer le fichier config dans son HOME :
+
+```
+scp config/config.yaml nas:/home/{nom_utilisateur}
+```
+
 Une fois ce fichier ouvert, la ligne "working_directory" est la plus importante, il est nécessaire d'y indiquer le chemin pour
 accéder au répertoire de travail (le répertoire contenant les fichiers pour exécuter le pipeline) et qui, s'il n'a pas été changé,
 se nomme Pipeline_RVHaplo (pour connaitre le chemin du dossier dans lequel vous êtes situé, utilisez la commande "pwd" directement dans le terminal).
@@ -89,6 +95,12 @@ Conseils :
 
   - Regarder la longueur moyenne des reads, peut aider sur le choix du filtre (par exemple on ne va pas appliquer un filtre de longueur minimum de 1000 bases si les reads font en moyenne 200 bases, on risquerait de perdre trop de reads et donc de l'information).
   - Si le jeu de données est consitué de 100.000 - 150.000 reads ou moins, ne pas appliquer de filtre (ou alors mettre un seuil faible).
+
+
+#### Pour renvoyer le fichier config dans le pipeline 
+```
+scp nas:/home/{nom_utilisateur} config/config.yaml
+```
 
 ## Démarrage
 
@@ -118,11 +130,13 @@ Exemple :
 snakemake -np --configfile config/config.yaml --use-envmodules --use-conda --conda-frontend conda
 ```
 
-Et pour un "vrai" lancement :
+## Pour lancer le pipeline en local (directement sur le terminal)
 
 ```
 snakemake --cores 16 --configfile config/config.yaml --use-envmodules --use-conda --conda-frontend conda
 ```
+
+## Pour lancer le pipeline en arrière-plan
 
 Il est également possible de lancer le pipeline en arrière-plan, c'est à dire qu'il travaillera tout seul même si vous n'êtes plus connecté sur le cluster, ou que l'ordinateur est éteint. Pour cela c'est le fichier "pipeline_rvhaplo.sh" qui va nous intéresser. Pour cela, le script va avoir besoin de 2 arguments, c'est à dire 2 paramètres que nous allons lui fournir. Le premier est le chemin du répertoire de travail (celui que vous avez indiqué dans le fichier de configuration), le second est le nombre de coeur maximum qui sera disponible pour le pipeline (par exemple, si le nombre de coeur est de 16 dans le fichier de configuration, indiquez 16)
 
